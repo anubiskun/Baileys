@@ -76,7 +76,6 @@
   "devDependencies": {
     "@adiwajshing/eslint-config": "git+https://github.com/adiwajshing/eslint-config",
     "@adiwajshing/keyed-db": "^0.2.4",
-    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@types/got": "^9.6.11",
     "@types/jest": "^27.5.1",
     "@types/node": "^16.0.0",
