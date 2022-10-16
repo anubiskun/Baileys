@@ -1,9 +1,9 @@
 import { Boom } from '@hapi/boom'
-import makeWASocket, { AnyMessageContent, delay, DisconnectReason, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeInMemoryStore, MessageRetryMap, useMultiFileAuthState } from '../src'
+import makeWASocket, { AnyMessageContent, delay, DisconnectReason, fetchLatestBaileysVersion, jsonFileAuth, makeCacheableSignalKeyStore, makeInMemoryStore, MessageRetryMap, S_WHATSAPP_NET, useMultiFileAuthState } from '../src'
 import MAIN_LOGGER from '../src/Utils/logger'
 
 const logger = MAIN_LOGGER.child({ })
-logger.level = 'trace'
+logger.level = 'silent'
 
 const useStore = !process.argv.includes('--no-store')
 const doReplies = !process.argv.includes('--no-reply')
@@ -23,7 +23,8 @@ setInterval(() => {
 
 // start a connection
 const startSock = async() => {
-	const { state, saveCreds } = await useMultiFileAuthState('baileys_auth_info')
+	// const { state, anuCreds } = await useMultiFileAuthState('baileys_auth_info')
+	const { state, anuCreds } = await jsonFileAuth('session.json')
 	// fetch latest version of WA Web
 	const { version, isLatest } = await fetchLatestBaileysVersion()
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`)
@@ -91,7 +92,7 @@ const startSock = async() => {
 
 			// credentials updated -- save them
 			if(events['creds.update']) {
-				await saveCreds()
+				await anuCreds()
 			}
 
 			if(events.call) {
@@ -109,8 +110,8 @@ const startSock = async() => {
 				const upsert = events['messages.upsert']
 				console.log('recv messages ', JSON.stringify(upsert, undefined, 2))
 
-				if(upsert.type === 'notify') {
-					for(const msg of upsert.messages) {
+				for(const msg of upsert.messages) {
+					if(msg.pushName) {
 						if(!msg.key.fromMe && doReplies) {
 							console.log('replying to', msg.key.remoteJid)
 							await sock!.readMessages([msg.key])
@@ -121,21 +122,21 @@ const startSock = async() => {
 			}
 
 			// messages updated like status delivered, message deleted etc.
-			if(events['messages.update']) {
-				console.log(events['messages.update'])
-			}
+			// if(events['messages.update']) {
+			// 	console.log(events['messages.update'])
+			// }
 
-			if(events['message-receipt.update']) {
-				console.log(events['message-receipt.update'])
-			}
+			// if(events['message-receipt.update']) {
+			// 	console.log(events['message-receipt.update'])
+			// }
 
-			if(events['messages.reaction']) {
-				console.log(events['messages.reaction'])
-			}
+			// if(events['messages.reaction']) {
+			// 	console.log(events['messages.reaction'])
+			// }
 
-			if(events['presence.update']) {
-				console.log(events['presence.update'])
-			}
+			// if(events['presence.update']) {
+			// 	console.log(events['presence.update'])
+			// }
 
 			if(events['chats.update']) {
 				console.log(events['chats.update'])
