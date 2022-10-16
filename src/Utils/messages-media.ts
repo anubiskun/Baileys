@@ -16,7 +16,6 @@ import { BaileysEventMap, DownloadableMessage, MediaConnInfo, MediaDecryptionKey
 import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildBuffer, jidNormalizedUser } from '../WABinary'
 import { aesDecryptGCM, aesEncryptGCM, hkdf } from './crypto'
 import { generateMessageID } from './generics'
-import ffmpeg from '@ffmpeg-installer/ffmpeg'
 
 const getTmpFilesDirectory = () => tmpdir()
 
@@ -81,7 +80,7 @@ const extractVideoThumb = async(
 	time: string,
 	size: { width: number; height: number },
 ) => new Promise((resolve, reject) => {
-    	const cmd = ffmpeg.path + `-ss ${time} -i ${path} -y -vf scale=${size.width}:-1 -vframes 1 -f image2 ${destPath}`
+    	const cmd = `ffmpeg -ss ${time} -i ${path} -y -vf scale=${size.width}:-1 -vframes 1 -f image2 ${destPath}`
     	exec(cmd, (err) => {
     		if(err) {
 			reject(err)
