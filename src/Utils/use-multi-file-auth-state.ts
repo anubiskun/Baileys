@@ -12,7 +12,7 @@ import { BufferJSON } from './generics'
  * Again, I wouldn't endorse this for any production level use other than perhaps a bot.
  * Would recommend writing an auth state for use with a proper SQL or No-SQL DB
  * */
-export const useMultiFileAuthState = async(folder: string): Promise<{ state: AuthenticationState, anuCreds: () => Promise<void> }> => {
+export const useMultiFileAuthState = async(folder: string): Promise<{ state: AuthenticationState, anuCreds: () => Promise<void>, type: string }> => {
 
 	const writeData = (data: any, file: string) => {
 		return writeFile(join(folder, fixFileName(file)!), JSON.stringify(data, BufferJSON.replacer))
@@ -85,6 +85,7 @@ export const useMultiFileAuthState = async(folder: string): Promise<{ state: Aut
 		},
 		anuCreds: () => {
 			return writeData(creds, 'creds.json')
-		}
+		},
+		type: 'multi'
 	}
 }

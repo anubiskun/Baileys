@@ -24,11 +24,11 @@ setInterval(() => {
 // start a connection
 const startSock = async() => {
 	// const { state, anuCreds } = await useMultiFileAuthState('baileys_auth_info')
-	const { state, anuCreds } = await jsonFileAuth('session.json')
+	const { state, anuCreds, type } = await jsonFileAuth('session.json')
 	// fetch latest version of WA Web
 	const { version, isLatest } = await fetchLatestBaileysVersion()
 	console.log(`using WA v${version.join('.')}, isLatest: ${isLatest}`)
-
+	console.log(type)
 	const sock = makeWASocket({
 		version,
 		logger,

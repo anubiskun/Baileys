@@ -19,9 +19,10 @@ const KEY_MAP: { [T in keyof SignalDataTypeMap]: string } = {
  * @param name 
  * @returns if use database cloud save/write database after saveCreds
  */
-export const jsonFileAuth = (database: any = { }, name?: any): { state: AuthenticationState, anuCreds: () => void } => {
+export const jsonFileAuth = (database: any = { }, name?: any): { state: AuthenticationState, anuCreds: () => void, type: string } => {
 	let creds: AuthenticationCreds
 	let keys: any = { }
+	let type: string
 
 	/**
     * save the authentication state to the database cloud
@@ -39,6 +40,7 @@ export const jsonFileAuth = (database: any = { }, name?: any): { state: Authenti
 	}
 
 	if(typeof database === 'object') {
+		type = 'json'
 		if(name === null) {
 			throw new Error("[ERROR] : parameter name can't be null")
 		}
@@ -53,6 +55,7 @@ export const jsonFileAuth = (database: any = { }, name?: any): { state: Authenti
 			keys = {}
 		}
 	} else if(typeof database === 'string') {
+		type = 'local'
 		if(existsSync(database)) {
 			const result = JSON.parse(readFileSync(database, { encoding: 'utf-8' }), BufferJSON.reviver)
 			creds = result.creds
@@ -99,6 +102,7 @@ export const jsonFileAuth = (database: any = { }, name?: any): { state: Authenti
 		},
 		anuCreds: () => {
 			(typeof database === 'object') ? saveDB() : saveLocal()
-		}
+		},
+		type
 	}
 }
