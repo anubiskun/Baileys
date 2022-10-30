@@ -97,7 +97,7 @@ export const extractImageThumb = async(bufferOrFilePath: Readable | Buffer | str
 	}
 
 	const lib = await getImageProcessingLibrary()
-	if('sharp' in lib) {
+	if('sharp' in lib && lib.sharp?.default) {
 		const img = lib.sharp!.default(bufferOrFilePath)
 		const dimensions = await img.metadata()
 
@@ -112,7 +112,7 @@ export const extractImageThumb = async(bufferOrFilePath: Readable | Buffer | str
 				height: dimensions.height,
 			},
 		}
-	} else {
+	} else if('jimp' in lib && lib.jimp) {
 		const { read, MIME_JPEG, RESIZE_BILINEAR, AUTO } = lib.jimp
 
 		const jimp = await read(bufferOrFilePath as any)
@@ -128,6 +128,8 @@ export const extractImageThumb = async(bufferOrFilePath: Readable | Buffer | str
 			buffer,
 			original: dimensions
 		}
+	} else {
+		throw new Boom('No image processing library available')
 	}
 }
 
